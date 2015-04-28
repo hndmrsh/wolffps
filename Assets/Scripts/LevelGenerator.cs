@@ -15,7 +15,7 @@ public class LevelGenerator : MonoBehaviour {
 	void Start () {
         Level level = LevelReader.LoadLevel(Application.dataPath + "/Levels/test.lvl", materials);
 
-        float centerX = (level.GetWidth() * TILE_SIZE_SCALED) / 2f;
+        float centerX = -((level.GetWidth() * TILE_SIZE_SCALED) / 2f);
         float centerY = (level.GetHeight() * TILE_SIZE_SCALED) / 2f;
 
         Vector3 levelScale = new Vector3(level.GetWidth() * TILE_SIZE, TILE_SIZE, level.GetHeight() * TILE_SIZE);
@@ -47,7 +47,7 @@ public class LevelGenerator : MonoBehaviour {
 
         if (level.HasNorthWall(x, y))
         {
-            pos.x = x * TILE_SIZE_SCALED + (TILE_SIZE_SCALED / 2f);
+            pos.x = -(x * TILE_SIZE_SCALED + (TILE_SIZE_SCALED / 2f));
             pos.z = y * TILE_SIZE_SCALED;
             rot.y = 0;
             GameObject wallInstance = (GameObject) Instantiate(wall, pos, Quaternion.Euler(rot));
@@ -57,7 +57,7 @@ public class LevelGenerator : MonoBehaviour {
 
         if (level.HasSouthWall(x, y))
         {
-            pos.x = x * TILE_SIZE_SCALED + (TILE_SIZE_SCALED / 2f);
+            pos.x = -(x * TILE_SIZE_SCALED + (TILE_SIZE_SCALED / 2f));
             pos.z = y * TILE_SIZE_SCALED + TILE_SIZE_SCALED;
             rot.y = 180;
             GameObject wallInstance = (GameObject)Instantiate(wall, pos, Quaternion.Euler(rot));
@@ -67,9 +67,9 @@ public class LevelGenerator : MonoBehaviour {
 
         if (level.HasEastWall(x, y))
         {
-            pos.x = x * TILE_SIZE_SCALED + TILE_SIZE_SCALED;
+            pos.x = -(x * TILE_SIZE_SCALED + TILE_SIZE_SCALED);
             pos.z = y * TILE_SIZE_SCALED + (TILE_SIZE_SCALED / 2f);
-            rot.y = 270;
+            rot.y = 90;
             GameObject wallInstance = (GameObject)Instantiate(wall, pos, Quaternion.Euler(rot));
             wallInstance.GetComponent<Renderer>().material = mat;
             wallInstance.name = name + "E";
@@ -77,9 +77,9 @@ public class LevelGenerator : MonoBehaviour {
 
         if (level.HasWestWall(x, y))
         {
-            pos.x = x * TILE_SIZE_SCALED;
+            pos.x = -(x * TILE_SIZE_SCALED);
             pos.z = y * TILE_SIZE_SCALED + (TILE_SIZE_SCALED / 2f);
-            rot.y = 90;
+            rot.y = 270;
             GameObject wallInstance = (GameObject)Instantiate(wall, pos, Quaternion.Euler(rot));
             wallInstance.GetComponent<Renderer>().material = mat;
             wallInstance.name = name + "W";
