@@ -3,52 +3,89 @@ using System.Collections;
 
 public class Level {
 
-    private Material[] materials;
-    private int[,] walls;
+    public enum SpaceType
+    {
+        Undefined, Floor, Door
+    }
 
-    public Level(Material[] materials, int[,] walls)
+    public enum Direction
+    {
+        North, South, East, West
+    }
+
+    private Material[] materials;
+    private char[,] level;
+
+    public Level(Material[] materials, char[,] level)
     {
         this.materials = materials;
-        this.walls = walls;
+        this.level = level;
     }
 
     public int GetWidth()
     {
-        return walls.GetLength(0);
+        return level.GetLength(0);
     }
 
     public int GetHeight()
     {
-        return walls.GetLength(1);
+        return level.GetLength(1);
     }
 
     public Material GetMaterial(int x, int y)
     {
-        return materials[walls[x, y]];
+        Debug.Log("mat for " + x + "," + y);
+
+        if (char.IsNumber(level[x, y]))
+        {
+            return materials[int.Parse(level[x, y].ToString())];
+        }
+
+        return null;
     }
 
-    public bool HasFloor(int x, int y)
+
+    public SpaceType GetSpaceType(int x, int y)
     {
-        return walls[x, y] >= 0;
-    }
-    public bool HasNorthWall(int x, int y)
-    {
-        return HasFloor(x, y) && (y == 0 || !HasFloor(x, y - 1));
+        if (char.IsDigit(level[x, y]))
+        {
+            return SpaceType.Floor;
+        }
+        else if (level[x, y] == 'D')
+        {
+            return SpaceType.Door;
+        }
+
+        return SpaceType.Undefined;
     }
 
-    public bool HasSouthWall(int x, int y)
+    /// <summary>
+    /// The space is walkable. This is different to a floor, as floors are surrounded by walls, where arbitrary walkable
+    /// spaces do not need to be (e.g. door spaces have their walls built in to the structure).
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <returns></returns>
+    public bool HasWalkableSpace(int x, int y)
     {
-        return HasFloor(x, y) && (y == GetHeight() - 1 || !HasFloor(x, y + 1));
+        return level[x, y] != '\0';
     }
 
-    public bool HasWestWall(int x, int y)
+    public bool HasWall(int x, int y, Direction dir)
     {
-        return HasFloor(x, y) && (x == 0 || !HasFloor(x - 1, y));
-    }
+        switch (dir)
+        {
+            case Direction.North:
+                return y == 0 || !HasWalkableSpace(x, y - 1);
+            case Direction.South:
+                return y == GetHeight() - 1 || !HasWalkableSpace(x, y + 1);
+            case Direction.West:
+                return x == 0 || !HasWalkableSpace(x - 1, y);
+            case Direction.East:
+                return x == GetWidth() - 1 || !HasWalkableSpace(x + 1, y);
+        }
 
-    public bool HasEastWall(int x, int y)
-    {
-        return HasFloor(x, y) && (x == GetWidth() - 1 || !HasFloor(x + 1, y));
+        return false;
     }
 
 }

@@ -9,6 +9,10 @@ public class PlayerController : MonoBehaviour {
     [Range(50, 1000)]
     public float rotateSpeed = 30f;
 
+    public float openRange = 1f;
+
+    private LayerMask doorLayerMask = 9;
+
     private CharacterController controller;
 
     void Start()
@@ -26,6 +30,27 @@ public class PlayerController : MonoBehaviour {
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         float curSpeed = speed * Time.deltaTime * v;
         controller.Move(forward * curSpeed);
+
+        if (Input.GetButton("Open"))
+        {
+            TryOpenDoor();
+        }
+    }
+
+    private void TryOpenDoor()
+    {
+        Ray ray = new Ray(transform.position, transform.forward);
+        RaycastHit hit = new RaycastHit();
+        Debug.DrawRay(transform.position, transform.forward, Color.red, openRange);
+
+        if (Physics.Raycast(ray, out hit, openRange, ~doorLayerMask.value))
+        {
+            Door door = hit.transform.GetComponent<Door>();
+            if (door != null) 
+            {
+                door.OpenClose();
+            }
+        }
     }
 
 }

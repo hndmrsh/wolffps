@@ -4,8 +4,8 @@ using System.IO;
 
 public class LevelGenerator : MonoBehaviour {
 
-    public GameObject floor, ceiling, wall;
-
+    public string levelName;
+    public GameObject floor, ceiling, wall, door;
     public Material[] materials;
 
     private const float TILE_SIZE = 0.25f;
@@ -13,7 +13,7 @@ public class LevelGenerator : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        Level level = LevelReader.LoadLevel(Application.dataPath + "/Levels/test.lvl", materials);
+        Level level = LevelReader.LoadLevel(Application.dataPath + "/Levels/" + levelName + ".lvl", materials);
 
         float centerX = -((level.GetWidth() * TILE_SIZE_SCALED) / 2f);
         float centerY = (level.GetHeight() * TILE_SIZE_SCALED) / 2f;
@@ -29,23 +29,52 @@ public class LevelGenerator : MonoBehaviour {
         {
             for (int y = 0; y < level.GetHeight(); y++)
             {
-                if (level.HasFloor(x, y))
+                switch (level.GetSpaceType(x, y))
                 {
-                    GenerateWalls(level, x, y);
+                    case Level.SpaceType.Floor:
+                        GenerateWalls(level, x, y);
+                        break;
+                    case Level.SpaceType.Door:
+                        GenerateDoor(level, x, y);
+                        break;
                 }
             }
         }
 
 	}
 
+    private void GenerateDoor(Level level, int x, int y)
+    {
+        Vector3 pos = new Vector3(0, door.transform.position.y, 0);
+        Vector3 rot = new Vector3(door.transform.rotation.eulerAngles.x, 0, door.transform.rotation.eulerAngles.z);
+        string name = "Door: " + x + "," + y;
+
+        if (level.HasWall(x, y, Level.Direction.North) && level.HasWall(x, y, Level.Direction.South))
+        {
+            // E-W door
+            pos.x = -(x * TILE_SIZE_SCALED + (TILE_SIZE_SCALED / 2f));
+            pos.z = y * TILE_SIZE_SCALED + (TILE_SIZE_SCALED / 2f);
+            rot.y = 90;
+            GameObject doorInstance = (GameObject)Instantiate(door, pos, Quaternion.Euler(rot));
+        }
+        else if (level.HasWall(x, y, Level.Direction.East) && level.HasWall(x, y, Level.Direction.West))
+        {
+            // N-S door
+            pos.x = -(x * TILE_SIZE_SCALED + (TILE_SIZE_SCALED / 2f));
+            pos.z = y * TILE_SIZE_SCALED + (TILE_SIZE_SCALED / 2f);
+            rot.y = 0;
+            GameObject doorInstance = (GameObject)Instantiate(door, pos, Quaternion.Euler(rot));
+        }
+    }
+
     private void GenerateWalls(Level level, int x, int y)
     {
         Vector3 pos = new Vector3(0, wall.transform.position.y, 0);
         Vector3 rot = new Vector3(wall.transform.rotation.eulerAngles.x, 0, wall.transform.rotation.eulerAngles.z);
         Material mat = level.GetMaterial(x, y);
-        string name = x + "," + y + ",";
+        string name = "Floor: " + x + "," + y;
 
-        if (level.HasNorthWall(x, y))
+        if (level.HasWall(x, y, Level.Direction.North))
         {
             pos.x = -(x * TILE_SIZE_SCALED + (TILE_SIZE_SCALED / 2f));
             pos.z = y * TILE_SIZE_SCALED;
@@ -55,7 +84,7 @@ public class LevelGenerator : MonoBehaviour {
             wallInstance.name = name + "N";
         }
 
-        if (level.HasSouthWall(x, y))
+        if (level.HasWall(x, y, Level.Direction.South))
         {
             pos.x = -(x * TILE_SIZE_SCALED + (TILE_SIZE_SCALED / 2f));
             pos.z = y * TILE_SIZE_SCALED + TILE_SIZE_SCALED;
@@ -65,7 +94,7 @@ public class LevelGenerator : MonoBehaviour {
             wallInstance.name = name + "S";
         }
 
-        if (level.HasEastWall(x, y))
+        if (level.HasWall(x, y, Level.Direction.East))
         {
             pos.x = -(x * TILE_SIZE_SCALED + TILE_SIZE_SCALED);
             pos.z = y * TILE_SIZE_SCALED + (TILE_SIZE_SCALED / 2f);
@@ -75,7 +104,7 @@ public class LevelGenerator : MonoBehaviour {
             wallInstance.name = name + "E";
         }
 
-        if (level.HasWestWall(x, y))
+        if (level.HasWall(x, y, Level.Direction.West))
         {
             pos.x = -(x * TILE_SIZE_SCALED);
             pos.z = y * TILE_SIZE_SCALED + (TILE_SIZE_SCALED / 2f);

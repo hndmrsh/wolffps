@@ -30,27 +30,28 @@ public class LevelReader {
         }
 
         // Remaining h lines is the level definition
-        int[,] walls = new int[width,height];
+        char[,] level = new char[width,height];
         for (int y = 0; y < height; y++)
         {
             string rowStr = stream.ReadLine();
             char[] row = rowStr.ToCharArray();
             for (int x = 0; x < width; x++)
             {
-                if (x < row.Length && char.IsNumber(row[x]))
+                if (x < row.Length && IsValidSpace(row[x])) 
                 {
-                    walls[x, y] = int.Parse(row[x].ToString());
-                }
-                else
-                {
-                    walls[x, y] = -1;
+                    level[x, y] = row[x];
                 }
             }
         }
 
         stream.Close();
 
-        return new Level(levelMaterials, walls);
+        return new Level(levelMaterials, level);
+    }
+
+    private static bool IsValidSpace(char space)
+    {
+        return char.IsLetterOrDigit(space);
     }
 
 }
