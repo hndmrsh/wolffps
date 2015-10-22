@@ -45,7 +45,7 @@ public class PlayerController : MonoBehaviour {
 
         if (Physics.Raycast(ray, out hit, openRange, ~doorLayerMask.value))
         {
-            Door door = hit.transform.GetComponent<Door>();
+            Door door = hit.transform.GetComponentInChildren<Door>();
             if (door != null) 
             {
                 door.OpenClose();
