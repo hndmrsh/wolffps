@@ -1,0 +1,96 @@
+﻿<Window
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="WolfFPS_Level_Editor.MainWindow"
+    KeyDown="Window_KeyDown"    
+    Title="&lt;unsaved&gt;" Height="848" Width="848" Icon="{StaticResource stone}">
+
+    <DockPanel>
+
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_New level" />
+                <MenuItem Header="_Open level" />
+                <MenuItem Header="_Save level" Click="save_Click"/>
+                <Separator />
+                <MenuItem Header="_Exit" />
+            </MenuItem>
+        </Menu>
+
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem Name="statusBarItemStatus">TODO: status item</StatusBarItem>
+            <StatusBarItem HorizontalAlignment="Right">WASD to pan</StatusBarItem>
+        </StatusBar>
+        
+        <Grid>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="48" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid Name ="gridButtons" Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="48" />
+                    <RowDefinition Height="48" />
+                </Grid.RowDefinitions>
+
+                <!-- PAINT BUTTONS -->
+                <RadioButton Name="btnD" Checked="btn_Checked" Grid.Row="0" Style="{StaticResource {x:Type ToggleButton}}" IsChecked="True" >
+                    <Image Source="{StaticResource door}" Margin="4,4,4,4"/>
+                </RadioButton>
+
+                <RadioButton Name="btn0" Checked="btn_Checked" Grid.Row="1" Style="{StaticResource {x:Type ToggleButton}}" >
+                    <Image Source="{StaticResource stone}" Margin="4,4,4,4"/>
+                </RadioButton>
+                <!-- END PAINT BUTTONS -->
+
+            </Grid>
+
+            <Grid Name="gridTiles" Grid.Column="1" Background="White" ShowGridLines="True">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+            </Grid>
+
+        </Grid>
+
+    </DockPanel>
+
+</Window>
