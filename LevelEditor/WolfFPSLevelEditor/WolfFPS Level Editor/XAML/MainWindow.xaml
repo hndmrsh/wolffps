@@ -1,7 +1,8 @@
 ﻿<Window
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="WolfFPS_Level_Editor.MainWindow"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="WolfFPS_Level_Editor.MainWindow"
     KeyDown="Window_KeyDown"    
     Title="&lt;unsaved&gt;" Height="848" Width="848" Icon="{StaticResource stone}">
 
@@ -10,7 +11,7 @@
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
                 <MenuItem Header="_New level" />
-                <MenuItem Header="_Open level" />
+                <MenuItem Header="_Open level" Click="load_Click"/>
                 <MenuItem Header="_Save level" Click="save_Click"/>
                 <Separator />
                 <MenuItem Header="_Exit" />

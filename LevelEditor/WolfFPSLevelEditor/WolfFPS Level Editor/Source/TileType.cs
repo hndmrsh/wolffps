@@ -13,7 +13,7 @@ namespace WolfFPS_Level_Editor
 
     static class TileTypeMethods
     {
-
+        #region TileType enum extensions
         public static string GetImageResourceName(this TileType type)
         {
             switch (type)
@@ -37,6 +37,20 @@ namespace WolfFPS_Level_Editor
                     return '0';
                 default:
                     return ' ';
+            }
+        }
+        #endregion
+
+        public static TileType GetTileTypeForChar(char c)
+        {
+            switch (c)
+            {
+                case 'D':
+                    return TileType.Door;
+                case '0':
+                    return TileType.Floor0;
+                default:
+                    return TileType.None;
             }
         }
 

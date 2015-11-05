@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -27,7 +28,6 @@ namespace WolfFPS_Level_Editor
     /// </summary>
     public partial class MainWindow : Window
     {
-
         private TileType selectedTileType = TileType.Door;
         private Level level;
 
@@ -51,7 +51,8 @@ namespace WolfFPS_Level_Editor
                     tile.Width = Double.NaN;
                     tile.Height = Double.NaN;
 
-                    tile.Click += new RoutedEventHandler(tile_Click);
+                    tile.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(tile_MouseLeftDown);
+                    tile.PreviewMouseRightButtonDown += new MouseButtonEventHandler(tile_MouseRightDown);    
 
                     TileTag tag = new TileTag
                     {
@@ -69,14 +70,35 @@ namespace WolfFPS_Level_Editor
             }
         }
 
-        private void tile_Click(object sender, RoutedEventArgs args)
+        void tile_MouseLeftDown(object sender, MouseButtonEventArgs e)
         {
             Button btn = (Button)sender;
             TileTag tag = (TileTag)btn.Tag;
 
             btn.Content = CreateImageForResource(selectedTileType.GetImageResourceName());
 
-            level.SetTileTypeForTag(tag, selectedTileType);
+            bool levelChanged = level.SetTileTypeForTag(tag, selectedTileType);
+            if (levelChanged)
+            {
+                UpdateUnsavedIndicator(false);
+            }
+        }
+
+        void tile_MouseRightDown(object sender, MouseButtonEventArgs e)
+        {
+            Button btn = (Button)sender;
+            TileTag tag = (TileTag)btn.Tag;
+
+            if (btn.Content != null)
+            {
+                ((Image)btn.Content).Visibility = Visibility.Hidden;
+            }
+
+            bool levelChanged = level.DeleteTileAtTag(tag);
+            if (levelChanged)
+            {
+                UpdateUnsavedIndicator(false);
+            }
         }
 
         private void btn_Checked(object sender, RoutedEventArgs e)
@@ -108,6 +130,26 @@ namespace WolfFPS_Level_Editor
                     TileTag tag = (TileTag)btn.Tag;
                     
                     tag = UpdateTileTag(tag, dir);
+                    btn.Tag = tag;
+
+                    RenderTile(btn, level.GetTileTypeForTag(tag));
+                }
+            }
+        }
+
+        private void ResetViewport()
+        {
+            foreach (UIElement child in gridTiles.Children)
+            {
+                if (child is Button)
+                {
+                    int x = Grid.GetColumn(child);
+                    int y = Grid.GetRow(child);
+
+                    Button btn = (Button)child;
+                    TileTag tag = new TileTag();
+                    tag.X = x;
+                    tag.Y = y;
                     btn.Tag = tag;
 
                     RenderTile(btn, level.GetTileTypeForTag(tag));
@@ -192,10 +234,36 @@ namespace WolfFPS_Level_Editor
             }
         }
 
+        private void UpdateUnsavedIndicator(bool saved)
+        {
+            if (!saved && !Title.EndsWith("*"))
+            {
+                Title += "*";
+            }
+            else if (saved && Title.EndsWith("*"))
+            {
+                Title = Title.Substring(0, Title.Length - 1);
+            }
+        }
+
         private void save_Click(object sender, RoutedEventArgs e)
         {
-            InputOutputUtil.Save(level);
+            string path = @"E:\Projects\Unity\WolfFPS\Assets\Levels\generated_test.lvl";
+            InputOutputUtil.Save(level, path);
+            Title = path;
+
+            UpdateUnsavedIndicator(true);
         }
+
+        private void load_Click(object sender, RoutedEventArgs e)
+        {
+            this.level = InputOutputUtil.Load(@"E:\Projects\Unity\WolfFPS\Assets\Levels\generated_test.lvl");
+            ResetViewport();
+
+            UpdateUnsavedIndicator(true);
+        }
+
+
 
 
     }
