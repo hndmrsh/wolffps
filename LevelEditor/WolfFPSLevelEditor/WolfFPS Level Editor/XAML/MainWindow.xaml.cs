@@ -263,7 +263,10 @@ namespace WolfFPS_Level_Editor
             UpdateUnsavedIndicator(true);
         }
 
-
+        private void resetViewport_Click(object sender, RoutedEventArgs e)
+        {
+            ResetViewport();
+        }
 
 
     }

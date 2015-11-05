@@ -16,6 +16,9 @@
                 <Separator />
                 <MenuItem Header="_Exit" />
             </MenuItem>
+            <MenuItem Header="_View">
+                <MenuItem Header="_Reset viewport" Click="resetViewport_Click" />
+            </MenuItem>
         </Menu>
 
         <StatusBar DockPanel.Dock="Bottom">
