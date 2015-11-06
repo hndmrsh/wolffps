@@ -95,5 +95,10 @@ namespace WolfFPS_Level_Editor
             MaxY = int.MinValue;
         }
 
+        public bool IsEmpty()
+        {
+            return map == null || map.Count == 0;
+        }
+
     }
 }

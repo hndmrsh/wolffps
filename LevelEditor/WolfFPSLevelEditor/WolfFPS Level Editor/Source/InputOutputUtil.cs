@@ -11,35 +11,41 @@ namespace WolfFPS_Level_Editor
     class InputOutputUtil
     {
 
-        public static void Save(Level level, string path)
+        public static bool Save(Level level, string path)
         {
-            int levelWidth = level.MaxX - level.MinX + 1;
-            int levelHeight = level.MaxY - level.MinY + 1;
-
-            string[] file = new string[3 + (level.MaxY - level.MinY + 1)];
-            file[0] = (levelWidth) + "," + (levelHeight);
-            file[1] = "1"; // TODO support more texture types
-            file[2] = "stone"; // TODO support more texture types
-
-
-            for (int y = level.MinY; y <= level.MaxY; y++)
+            if (!level.IsEmpty())
             {
-                string row = "";
+                int levelWidth = level.MaxX - level.MinX + 1;
+                int levelHeight = level.MaxY - level.MinY + 1;
 
-                for (int x = level.MinX; x <= level.MaxX; x++)
+                string[] file = new string[3 + (level.MaxY - level.MinY + 1)];
+                file[0] = (levelWidth) + "," + (levelHeight);
+                file[1] = "1"; // TODO support more texture types
+                file[2] = "stone"; // TODO support more texture types
+
+
+                for (int y = level.MinY; y <= level.MaxY; y++)
                 {
-                    TileType type = level.GetTileTypeForTag(new TileTag()
+                    string row = "";
+
+                    for (int x = level.MinX; x <= level.MaxX; x++)
                     {
-                        X = x,
-                        Y = y
-                    });
-                    row += type.GetCharRepresentation();
+                        TileType type = level.GetTileTypeForTag(new TileTag()
+                        {
+                            X = x,
+                            Y = y
+                        });
+                        row += type.GetCharRepresentation();
+                    }
+
+                    file[(y - level.MinY) + 3] = row;
                 }
 
-                file[(y - level.MinY) + 3] = row;
+                System.IO.File.WriteAllLines(path, file);
+                return true;
             }
 
-            System.IO.File.WriteAllLines(path, file);
+            return false;
         }
 
         public static Level Load(string path)

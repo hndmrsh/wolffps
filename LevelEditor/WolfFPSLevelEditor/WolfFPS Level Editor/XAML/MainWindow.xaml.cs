@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -31,12 +32,20 @@ namespace WolfFPS_Level_Editor
         private TileType selectedTileType = TileType.Door;
         private Level level;
 
+        private bool progressSaved = true;
+
         public MainWindow()
         {
             InitializeComponent();
+            
             GenerateTiles();
-
             level = new Level();
+
+            this.CommandBindings.Add(new CommandBinding(ApplicationCommands.New, newExecuted));
+            this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Open, openExecuted));
+            this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Save, saveExecuted, saveCanExecute));
+            this.CommandBindings.Add(new CommandBinding(ApplicationCommands.SaveAs, saveAsExecuted, saveCanExecute));
+            this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Close, closeExecuted));
         }
 
         private void GenerateTiles()
@@ -80,8 +89,10 @@ namespace WolfFPS_Level_Editor
             bool levelChanged = level.SetTileTypeForTag(tag, selectedTileType);
             if (levelChanged)
             {
-                UpdateUnsavedIndicator(false);
+                this.progressSaved = false;
+                UpdateUnsavedIndicator();
             }
+
         }
 
         void tile_MouseRightDown(object sender, MouseButtonEventArgs e)
@@ -97,8 +108,10 @@ namespace WolfFPS_Level_Editor
             bool levelChanged = level.DeleteTileAtTag(tag);
             if (levelChanged)
             {
-                UpdateUnsavedIndicator(false);
+                this.progressSaved = false;
+                UpdateUnsavedIndicator();
             }
+
         }
 
         private void btn_Checked(object sender, RoutedEventArgs e)
@@ -234,33 +247,40 @@ namespace WolfFPS_Level_Editor
             }
         }
 
-        private void UpdateUnsavedIndicator(bool saved)
+        private void UpdateUnsavedIndicator()
         {
-            if (!saved && !Title.EndsWith("*"))
+            if (!this.progressSaved && !Title.EndsWith("*"))
             {
                 Title += "*";
             }
-            else if (saved && Title.EndsWith("*"))
+            else if (this.progressSaved && Title.EndsWith("*"))
             {
                 Title = Title.Substring(0, Title.Length - 1);
             }
         }
 
-        private void save_Click(object sender, RoutedEventArgs e)
+        private bool ConfirmClose()
         {
-            string path = @"E:\Projects\Unity\WolfFPS\Assets\Levels\generated_test.lvl";
-            InputOutputUtil.Save(level, path);
-            Title = path;
+            if (!this.progressSaved)
+            {
+                string msg = "File has not been saved. Would you like to save before closing file?";
+                MessageBoxResult result = MessageBox.Show(msg, null, MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
 
-            UpdateUnsavedIndicator(true);
-        }
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        ApplicationCommands.Save.Execute(this, this);
+                        return true;
+                    case MessageBoxResult.No:
+                        return true;
+                    case MessageBoxResult.Cancel:
+                        return false;
+                }
 
-        private void load_Click(object sender, RoutedEventArgs e)
-        {
-            this.level = InputOutputUtil.Load(@"E:\Projects\Unity\WolfFPS\Assets\Levels\generated_test.lvl");
-            ResetViewport();
+                return false;
+            }
 
-            UpdateUnsavedIndicator(true);
+            return true;
         }
 
         private void resetViewport_Click(object sender, RoutedEventArgs e)
@@ -268,6 +288,68 @@ namespace WolfFPS_Level_Editor
             ResetViewport();
         }
 
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            e.Cancel = !ConfirmClose();
+        }
+
+        #region Commands
+
+        private void newExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (ConfirmClose())
+            {
+                this.level = new Level();
+                ResetViewport();
+
+                this.progressSaved = true;
+
+                Title = "<unsaved>";
+                UpdateUnsavedIndicator();
+            }
+        }
+
+        private void openExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (ConfirmClose())
+            {
+                this.level = InputOutputUtil.Load(@"E:\Projects\Unity\WolfFPS\Assets\Levels\generated_test.lvl");
+                ResetViewport();
+
+                this.progressSaved = true;
+                UpdateUnsavedIndicator();
+            }
+        }
+
+        private void saveCanExecute(object sender, CanExecuteRoutedEventArgs e) 
+        {
+            e.CanExecute = !level.IsEmpty() && !progressSaved;
+        }
+
+        private void saveExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            string path = @"E:\Projects\Unity\WolfFPS\Assets\Levels\generated_test.lvl";
+            InputOutputUtil.Save(level, path);
+            Title = path;
+
+            this.progressSaved = true;
+            UpdateUnsavedIndicator();
+        }
+
+        private void saveAsExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void closeExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (ConfirmClose())
+            {
+                Window.Close();
+            }
+        }
+
+        #endregion
 
     }
 }

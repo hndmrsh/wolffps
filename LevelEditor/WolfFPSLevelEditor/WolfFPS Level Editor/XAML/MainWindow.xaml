@@ -3,18 +3,21 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="WolfFPS_Level_Editor.MainWindow"
-    KeyDown="Window_KeyDown"    
+    KeyDown="Window_KeyDown"
+    x:Name="Window"
+    Closing="Window_Closing"
     Title="&lt;unsaved&gt;" Height="848" Width="848" Icon="{StaticResource stone}">
 
     <DockPanel>
 
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
-                <MenuItem Header="_New level" />
-                <MenuItem Header="_Open level" Click="load_Click"/>
-                <MenuItem Header="_Save level" Click="save_Click"/>
+                <MenuItem Header="_New" Command="New"/>
+                <MenuItem Header="_Open" Command="Open"/>
+                <MenuItem Header="_Save" Command="Save" />
+                <MenuItem Header="_Save As..." Command="SaveAs" />
                 <Separator />
-                <MenuItem Header="_Exit" />
+                <MenuItem Header="_Close" Command="Close"/>
             </MenuItem>
             <MenuItem Header="_View">
                 <MenuItem Header="_Reset viewport" Click="resetViewport_Click" />
