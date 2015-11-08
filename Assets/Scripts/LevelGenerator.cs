@@ -72,7 +72,7 @@ public class LevelGenerator : MonoBehaviour {
         Vector3 pos = new Vector3(0, wall.transform.position.y, 0);
         Vector3 rot = new Vector3(wall.transform.rotation.eulerAngles.x, 0, wall.transform.rotation.eulerAngles.z);
         Material mat = level.GetMaterial(x, y);
-        string name = "Floor: " + x + "," + y;
+        string name = "Wall: " + x + "," + y;
 
         if (level.HasWall(x, y, Level.Direction.North))
         {
